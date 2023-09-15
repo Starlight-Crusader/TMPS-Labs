@@ -4,6 +4,7 @@
 
 #include "../model/tasks.h"
 #include "../misc/utility.h"
+#include "../model/taskFactory.h"
 
 class Scanner {
 	public:
@@ -27,16 +28,7 @@ class ConsoleScanner : public Scanner {
 
 				int tdelta = Utility::convert_time_delta(parameters[1]);
 
-                time_t current_time;
-                time(&current_time);
-
-                RegularTask* newTask = new RegularTask(parameters[2], current_time + tdelta);
-
-				if (parameters[0] == "reg") {
-					new_tasks.push_back(new RegularTask(parameters[2], current_time + tdelta));
-				} else if (parameters[0] == "rec") {
-					new_tasks.push_back(new RecurringTask(parameters[2], tdelta));
-				}
+				new_tasks.push_back(TaskFactory::create_task(parameters[0], parameters[2], tdelta));
 			}
 
 			return new_tasks;

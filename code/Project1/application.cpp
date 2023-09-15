@@ -82,7 +82,7 @@ class Application {
         }
 
         void get_one_test() {
-            std::cout << "Input the id of the record to print or leave the line blank to cancel: ";
+            std::cout << "Input the id of the record to print or leave the line blank to cancel: " << '\n';
             std::string input_line;
             std::getline(std::cin, input_line);
 			if (input_line.empty()) { return; }
@@ -122,7 +122,7 @@ class Application {
             this->console_output_test();
             printer = new FilePrinter("file_printer.out");
 
-            std::cout << "Input the id of the record to print or leave the line blank to cancel: ";
+            std::cout << "Input the id of the record to print or leave the line blank to cancel: " << '\n';
             std::string input_line;
             std::getline(std::cin, input_line);
 
@@ -134,5 +134,5 @@ int main() {
 	Application* app = new Application();
 	app->setup_console_application();
 
-    app->file_printer_test();
+    app->basic_functionality_test();
 }

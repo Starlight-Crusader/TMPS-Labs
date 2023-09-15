@@ -27,7 +27,7 @@ class RegularTask : public Task {
 	public:
         std::time_t expiration_dt;
 
-		RegularTask(std::string task_description, std::time_t expiration_dt) : Task(task_description), expiration_dt(expiration_dt) {}
+		RegularTask(std::string task_description, std::time_t interval) : Task(task_description), expiration_dt(time(0) + interval) {}
 
 		std::string get_data_string() override {
             const char* format = "%Y-%m-%d %H:%M:%S";

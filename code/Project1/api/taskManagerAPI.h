@@ -29,12 +29,12 @@ void TaskManagerAPI::maintain_tasks(TaskRepository* repository) {
         int code = task->maintenance();
 
         if (code == -1) {
-            std::cout << "-" << task->get_data(&Task::id) << "|" << task->get_data(&Task::id) << " - removed " << '\n';
+            std::cout << "- " << task->get_data(&Task::id) << "|" << task->get_data(&Task::id) << " - removed " << '\n';
             this->delete_task(repository, task->get_data(&Task::id));
         } else if (code == 1) {
-            std::cout << "+" << task->get_data(&Task::id) << "|" << task->get_data(&Task::id) << " - extended " << '\n';
+            std::cout << "+ " << task->get_data(&Task::id) << "|" << task->get_data(&Task::id) << " - extended " << '\n';
         } else {
-            std::cout << "~" << task->get_data(&Task::id) << "|" << task->get_data(&Task::id) << " - checked " << '\n';
+            std::cout << "~ " << task->get_data(&Task::id) << "|" << task->get_data(&Task::id) << " - checked " << '\n';
         }
 	}
 };
