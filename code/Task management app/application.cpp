@@ -11,21 +11,21 @@
 #include "./io/printer.h"
 #include "./model/tasks.h"
 #include "./model/taskRepository.h"
-#include "./api/taskManagerAPI.h"
+#include "./manager/taskManager.h"
 
 class Application {
 	private:
 		Scanner* scanner;
 		Printer* printer;
         TaskRepository* repository;
-        TaskManagerAPI* manager;
+        TaskManager* manager;
 
 	public:
         void setup_console_application() {
             scanner = new ConsoleScanner();
             printer = new ConsolePrinter();
             repository = new MemoryRepository();
-            manager = new TaskManagerAPI();
+            manager = new TaskManager();
         }
 
         void switch_working_repo(TaskRepository* new_repository) { repository = new_repository; }

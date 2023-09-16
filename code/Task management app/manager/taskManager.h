@@ -4,7 +4,7 @@
 #include "../model/taskRepository.h"
 #include "../model/taskRepository.h"
 
-class TaskManagerAPI {
+class TaskManager {
 	public:
 		void create_task(TaskRepository*, Task*);
 		void delete_task(TaskRepository*, int);
@@ -14,15 +14,15 @@ class TaskManagerAPI {
 		void edit_task(TaskRepository*, int, std::string);
 };
 
-void TaskManagerAPI::create_task(TaskRepository* repository, Task* new_task) {
+void TaskManager::create_task(TaskRepository* repository, Task* new_task) {
 	repository->save_record(new_task);
 };
 
-void TaskManagerAPI::delete_task(TaskRepository* repository, int id) {
+void TaskManager::delete_task(TaskRepository* repository, int id) {
 	repository->remove_record(id);
 };
 
-void TaskManagerAPI::maintain_tasks(TaskRepository* repository) {
+void TaskManager::maintain_tasks(TaskRepository* repository) {
     std::cout << "MAINTENANCE = " << Utility::get_current_time_str() << ':' << '\n';
 
 	for (Task* task : repository->get_all()) {
@@ -39,6 +39,6 @@ void TaskManagerAPI::maintain_tasks(TaskRepository* repository) {
 	}
 };
 
-void TaskManagerAPI::edit_task(TaskRepository* repository, int id, std::string new_description) {
+void TaskManager::edit_task(TaskRepository* repository, int id, std::string new_description) {
 	repository->edit_one(id, new_description);
 };
