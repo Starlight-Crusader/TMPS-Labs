@@ -11,25 +11,14 @@
 #include "./model/tasks.h"
 #include "./model/taskRepository.h"
 #include "./manager/taskManager.h"
-#include "./creationals/builder.h"
+
+#pragma once
 
 class Application {
-	private:
-		Scanner* scanner;
+	public:
+        Scanner* scanner;
 		Printer* printer;
         TaskRepository* repository;
-        TaskManager* manager;
-
-        friend class ConsoleBuilder;
-        friend class FileBuilder;
-
-	public:
-        void setup_console_application() {
-            scanner = new ConsoleScanner();
-            printer = new ConsolePrinter();
-            repository = new MemoryRepository();
-            manager = new TaskManager();
-        }
 
         void switch_working_repo(TaskRepository* new_repository) { repository = new_repository; }
         void switch_scanner(Scanner* new_scanner) { scanner = new_scanner; }
@@ -39,7 +28,7 @@ class Application {
 			std::vector<Task*> input = scanner->read_data();
             
             for (Task* input_item : input) { 
-                manager->create_task(repository, input_item);
+                TaskManager::get().create_task(repository, input_item);
             }
 		}
 
@@ -55,7 +44,7 @@ class Application {
                 std::getline(std::cin, id);
 				if (id.empty()) { break; }
 
-                manager->delete_task(repository, std::stoi(id));
+                TaskManager::get().delete_task(repository, std::stoi(id));
             }
         }
 
@@ -66,7 +55,7 @@ class Application {
             sleep(delay);
             #endif
 
-            manager->maintain_tasks(repository);
+            TaskManager::get().maintain_tasks(repository);
         }
 
         void edit_test() {
@@ -80,7 +69,7 @@ class Application {
 
                 std::vector<std::string> parameters = Utility::tokenize_input(input_line, '|');
 
-                manager->edit_task(repository, std::stoi(parameters[0]), parameters[1]);
+                TaskManager::get().edit_task(repository, std::stoi(parameters[0]), parameters[1]);
             }
         }
 

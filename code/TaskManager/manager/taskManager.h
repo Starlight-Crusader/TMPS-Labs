@@ -4,6 +4,8 @@
 #include "../model/taskRepository.h"
 #include "../model/taskRepository.h"
 
+#pragma once
+
 class TaskManager {
     private:
         TaskManager() {}
@@ -22,6 +24,8 @@ class TaskManager {
 
 		void edit_task(TaskRepository*, int, std::string);
 };
+
+TaskManager TaskManager::m_instance;
 
 void TaskManager::create_task(TaskRepository* repository, Task* new_task) {
 	repository->save_record(new_task);

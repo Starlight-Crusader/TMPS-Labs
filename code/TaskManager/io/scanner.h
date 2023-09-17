@@ -6,6 +6,8 @@
 #include "../misc/utility.h"
 #include "../creationals/factory.h"
 
+#pragma once
+
 class Scanner {
 	public:
 		virtual std::vector<Task*> read_data() = 0;

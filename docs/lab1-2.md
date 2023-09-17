@@ -32,7 +32,6 @@ While designing the architecture I tried to divide the functionality into compon
     [controller] Task manager - describes and calls task handling procedures;
     [model] Task repository - temporary and permanent data storage;
     [model] Task - the main entity int the application's data model;
-    [model] Task factory - special agent helping to initialise new tasks;
     Utility - a special package containing some functions of mixed use.
 
 * The above is only an attempt to categorize all the components in accordance with the MVC arhitecture; there may be adjustments in the future. At this stage, I didn't try to adhere to any architectural design patterns that much.
@@ -152,7 +151,7 @@ class MemoryRepository : public TaskRepository {
 
 I've required some data structure to store all the objects from the task group, and you may remember that there are different types of them, so by defining these storage using general abstraction, I've made the record vector capable of handling both types of tasks. The same can be said about the application (which is definitely a high-level model depending on a bucnh of low-level ones) described above, since it all depends on abstraction - I've made a robot that doesn't need different interfaces on its manipulator arm to handle both a hammer and a screwdriver but has a general interface to switch between the tools.
 
-### Factory Design Pattern
+### Factory DP
 
 During the second laboratory, we were puzzled by adding any design patterns and I was able to quickly determine the functionality and apply the Factory design pattern for its intended purpose.
 
@@ -173,8 +172,158 @@ class TaskFactory {
 };
 ```
 
+### Abstract Factory DP
+
+The Abstract Factory design pattern is a creational design pattern that provides an interface for creating families of related or dependent objects without specifying their concrete classes. It allows you to abstract the creation of objects and ensures that the created objects are compatible and designed to work together. The pattern consists of an abstract factory interface with multiple concrete factory implementations, each responsible for creating a family of related objects. Clients interact with the abstract factory to obtain objects, and they remain unaware of the specific classes being used.
+
+As part of this project, I decided to use this pattern to create different I/O configurations, which will later be used by the builder to instantiate different versions of the application.
+
+The family of related products in our case is a scanner and printer. There are two variants of this family: for console i/o handling and for file i/o handling. Therefore, the implementation of this factory looks something like this:
+
+```cpp
+class IOFactory {
+    public:
+        virtual Printer* getPrinter() = 0;
+        virtual Scanner* getScanner() = 0;
+};
+
+class ConsoleIOFactory : public IOFactory {
+    public:
+        Printer* getPrinter() { return new ConsolePrinter(); }
+        Scanner* getScanner() { return new ConsoleScanner(); }
+};
+
+class FileIOFactory : public IOFactory {
+    public:
+        Printer* getPrinter() { return new FilePrinter(""); }
+        Scanner* getScanner() { return new FileScanner(); }
+};
+```
+
+Next, the builder, which we will talk about later, will instantiate a certain type of factory and produce the necessary i/o component for the application it is working on ...
+
+```cpp
+class Builder{
+    private:
+        Application* product;
+        IOFactory* factory;
+
+    public:
+        ...
+        void set_io() { 
+            product->scanner = factory->getScanner();
+            product->printer = factory->getPrinter();
+        }
+        ...
+};
+```
+
+### Builder DP
+
+The Builder design pattern is a creational design pattern that is used to construct complex objects step by step. It separates the construction of an object from its representation, allowing for the same construction process to create different representations. This pattern typically involves a Director class that orchestrates the construction process and a Builder interface with concrete implementations for constructing various parts of the object. It is particularly useful when an object has a large number of optional components or configurations, as it provides a more organized and flexible way to create such objects without the need for a multitude of constructor parameters. The Builder pattern promotes code readability and maintainability by making object construction more explicit and easier to understand.
+
+As previously stated, based on the i/o and storing component configuration, it is possible to create different versions of the application. In our case, there will be two builders: one building a console-based application and the other building a file-based application.
+
+```cpp
+class Builder {
+    public:
+        virtual void reset() = 0;
+        virtual Application* get_product() = 0;
+
+        virtual void set_io() = 0;
+        virtual void set_repository() = 0;
+};
+
+class ConsoleBuilder : public Builder {
+    private:
+        Application* product;
+        IOFactory* factory;
+
+    public:
+        void reset() { product = new Application(); factory = new ConsoleIOFactory(); }
+        Application* get_product() { return product; }
+
+        void set_io() { 
+            product->scanner = factory->getScanner();
+            product->printer = factory->getPrinter();
+        }
+        
+        void set_repository() { product->repository = new MemoryRepository(); }
+};
+
+class FileBuilder : public Builder {
+    ...
+};
+```
+
+Then I've added the Director that tasks the Builder to build a version of product by implementing some of the production steps ...
+
+```cpp
+class Director {
+    private:
+        Builder* builder;
+
+        public:
+            void set_builder(Builder* new_builder) { builder = new_builder;}
+
+            Application* build_app() {
+                builder->reset();
+                builder->set_io();
+                builder->set_repository();
+
+                return builder->get_product();
+            }
+};
+```
+
+### Singleton DP
+
+The Singleton design pattern is a creational design pattern that ensures a class has only one instance and provides a global point of access to that instance. It is useful when you want to restrict the instantiation of a class to a single instance, typically for managing shared resources, configurations, or maintaining a single point of control within an application.
+
+If you look at the manager implementation, you will see that it is more like an interface describing interactions between various application components and doesn't contain any fields, so essentialy, we need just a single instance of this component with global access to it—the perfect candidate to demonstrate the pattern implementation...
+
+```cpp
+class TaskManager {
+    private:
+        TaskManager() {}
+
+        static TaskManager m_instance;
+
+	public:
+        static TaskManager& get() {
+            return m_instance;
+        }
+
+		void create_task(TaskRepository*, Task*);
+		void delete_task(TaskRepository*, int);
+
+		void maintain_tasks(TaskRepository*);
+
+		void edit_task(TaskRepository*, int, std::string);
+};
+
+TaskManager TaskManager::m_instance;
+```
+
+Essentially, we hide the constructor by making it private to prevent direct instantiation of the class and provide a static method to access the unique instance. And in this way, we are able to access this single instance from every place in the program.
+
+```cpp
+class Application {
+	public:
+        ...
+		void console_input_test() {
+			std::vector<Task*> input = scanner->read_data();
+            
+            for (Task* input_item : input) { 
+                TaskManager::get().create_task(repository, input_item);
+            }
+		}
+        ...
+};
+```
+
 ## Conclusion
 
-In summary, the adherence to SOLID principles and the incorporation of the Factory Design Pattern in the app's architecture have resulted in a robust and adaptable system. These design choices enhance maintainability, scalability, and code reusability, providing a solid foundation for future development and ensuring the application can evolve effectively to meet changing demands. In my opinion, the deliberate application of SOLID principles and the integration of the factory design pattern have significantly improved the overall quality and longevity of our application's architecture and made my work much more challenging and interesting.
+In summary, the adherence to SOLID principles and the incorporation of the design patterns in the app's architecture have resulted in a robust and adaptable system. These design choices enhance performance, maintainability, scalability, and code reusability, providing a solid foundation for future development and ensuring the application can evolve effectively to meet changing demands. In my opinion, the deliberate application of SOLID principles and the integration of the factory design pattern have significantly improved the overall quality and longevity of our application's architecture and made my work much more challenging and interesting.
 
 * You may see all the source code developed as part of the implementation of this projec by acessing: _https://github.com/Starlight-Crusader/TMPS-Labs/tree/main_.

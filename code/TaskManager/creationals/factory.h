@@ -1,6 +1,6 @@
 #include <string>
 
-#include "tasks.h"
+#include "../model/tasks.h"
 
 #pragma once
 

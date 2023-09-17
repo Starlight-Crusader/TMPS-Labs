@@ -1,13 +1,13 @@
 all: compile clear run delete
 
 compile:
-	g++ run.cpp -o run
+	g++ application.cpp -o app
 
 clear:
 	clear
 
 run:
-	./run
+	./app
 
 delete:
-	rm run
+	rm app

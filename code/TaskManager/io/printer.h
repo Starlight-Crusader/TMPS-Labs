@@ -4,10 +4,13 @@
 
 #include "../model/taskRepository.h"
 
+#pragma once
+
 class Printer {
 	public:
 		virtual void print_record(TaskRepository*, int) = 0;
 		virtual void list_records(TaskRepository*) = 0;
+        virtual void set_path(std::string) {}
 };
 
 class ConsolePrinter : public Printer {
