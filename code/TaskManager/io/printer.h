@@ -33,6 +33,8 @@ class FilePrinter : public Printer {
     public:
         FilePrinter(std::string path) : path(path) {}
 
+        void set_path(std::string new_path) { path = new_path; }
+
         void print_record(TaskRepository* repository, int id) override {
             std::ofstream output_file;
             output_file.open(path, std::ios::app);

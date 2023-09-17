@@ -5,7 +5,16 @@
 #include "../model/taskRepository.h"
 
 class TaskManager {
+    private:
+        TaskManager() {}
+
+        static TaskManager m_instance;
+
 	public:
+        static TaskManager& get() {
+            return m_instance;
+        }
+
 		void create_task(TaskRepository*, Task*);
 		void delete_task(TaskRepository*, int);
 

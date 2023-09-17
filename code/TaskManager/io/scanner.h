@@ -4,7 +4,7 @@
 
 #include "../model/tasks.h"
 #include "../misc/utility.h"
-#include "../model/taskFactory.h"
+#include "../creationals/factory.h"
 
 class Scanner {
 	public:
@@ -36,5 +36,6 @@ class ConsoleScanner : public Scanner {
 };
 
 class FileScanner : public Scanner {
-	// File input functionality implemented if necessary ...
+	public:
+        std::vector<Task*> read_data();
 };

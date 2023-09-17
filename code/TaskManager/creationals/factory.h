@@ -2,6 +2,8 @@
 
 #include "tasks.h"
 
+#pragma once
+
 class TaskFactory {
 	public:
 		static Task* create_task(std::string type, std::string desc, std::time_t interval) {

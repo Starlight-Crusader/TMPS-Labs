@@ -6,12 +6,12 @@
 #include <unistd.h>
 #endif
 
-
 #include "./io/scanner.h"
 #include "./io/printer.h"
 #include "./model/tasks.h"
 #include "./model/taskRepository.h"
 #include "./manager/taskManager.h"
+#include "./creationals/builder.h"
 
 class Application {
 	private:
@@ -19,6 +19,9 @@ class Application {
 		Printer* printer;
         TaskRepository* repository;
         TaskManager* manager;
+
+        friend class ConsoleBuilder;
+        friend class FileBuilder;
 
 	public:
         void setup_console_application() {
@@ -129,10 +132,3 @@ class Application {
             printer->print_record(repository, std::stoi(input_line));
         }
 };
-
-int main() {
-	Application* app = new Application();
-	app->setup_console_application();
-
-    app->basic_functionality_test();
-}
