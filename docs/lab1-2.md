@@ -39,41 +39,38 @@ While designing the architecture I tried to divide the functionality into compon
 ### O
 The Open-Closed Principle (OCP) is a principle in object-oriented programming that states that software entities (classes, modules, functions, etc.) should be open for extension but closed for modification. To enforce the Open-Closed Principle, developers should design their code in a way that allows for the addition of new features or behaviors through inheritance or interface implementations without altering existing code, reducing the risk of introducing bugs in the existing system.
 
-The main way it is achieved in my application is polymarphism. Let's take a look at the Task implementation ...
+The main way it is achieved in my application is polymorphism. Let's take a look at the Task implementation ...
 
 ```cpp
 class Task {
 	public:
-        ...
-
 		virtual int maintenance() = 0;
+	...
 };
 
 class RegularTask : public Task {
 	public:
-        ...
-
 		int maintenance() override {
 			if (time(0) > expiration_dt) {
 				return -1;
 			} else {
-                return 0;
-            }
+				return 0;
+            		}
 		}
+	...
 };
 
 class RecurringTask : public Task {
 	public:
-        ...
-
 		int maintenance() override {
 			if (time(0) - extension_dt > interval) {
 				extension_dt = time(0) + interval;
 				return 1;
 			} else {
-                return 0;
-            }
+				return 0;
+            		}
 		}
+	...
 };
 ```
 
@@ -111,9 +108,9 @@ class Application {
 	private:
 		Scanner* scanner;
 		Printer* printer;
-        TaskRepository* repository;
-        TaskManager* manager;
-    ...
+        	TaskRepository* repository;
+        	TaskManager* manager;
+	...
 };
 ```
 
@@ -121,15 +118,14 @@ As you can see ther is a lot of composition in its structure and it requires a f
 
 ```cpp
 class Application {
-    ...
 	public:
 		void setup_console_application() {
-            scanner = new ConsoleScanner();
-            printer = new ConsolePrinter();
-            repository = new MemoryRepository();
-            manager = new TaskManager();
-        }
-    ...
+            		scanner = new ConsoleScanner();
+            		printer = new ConsolePrinter();
+            		repository = new MemoryRepository();
+            		manager = new TaskManager();
+        	}
+    	...
 };
 ```
 
@@ -144,7 +140,7 @@ I mean a lot of DIP was already demonstrated above but let's look at something n
 ```cpp
 class MemoryRepository : public TaskRepository {
 	public:
-        std::vector<Task*> records;
+        	std::vector<Task*> records;
         ...
 };
 ```
@@ -290,9 +286,7 @@ class TaskManager {
         static TaskManager m_instance;
 
 	public:
-        static TaskManager& get() {
-            return m_instance;
-        }
+        	static TaskManager& get() { return m_instance; }
 
 		void create_task(TaskRepository*, Task*);
 		void delete_task(TaskRepository*, int);
@@ -310,13 +304,12 @@ Essentially, we hide the constructor by making it private to prevent direct inst
 ```cpp
 class Application {
 	public:
-        ...
 		void console_input_test() {
 			std::vector<Task*> input = scanner->read_data();
             
-            for (Task* input_item : input) { 
-                TaskManager::get().create_task(repository, input_item);
-            }
+            		for (Task* input_item : input) { 
+                		TaskManager::get().create_task(repository, input_item);
+            		}
 		}
         ...
 };
