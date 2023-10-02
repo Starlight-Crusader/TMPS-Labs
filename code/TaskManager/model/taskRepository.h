@@ -9,59 +9,78 @@
 #pragma once
 
 class TaskRepository {
-	public:
+    private:
         int id;
 
+	public:
 		TaskRepository() : id(Utility::generateRandomId()) {}
 
-		virtual void save_record(Task*) = 0;
-		virtual void remove_record(int) = 0;
+		virtual void saveRecord(Task*) = 0;
+		virtual void removeRecord(const int&) = 0;
 
-		virtual Task* get_one(int) = 0;
-		virtual std::vector<Task*> get_all() = 0;
+		virtual Task* getOne(const int&) = 0;
+		virtual std::vector<Task*> getAll() = 0;
 
-		virtual void edit_one(int, std::string) = 0;
+        virtual void editDesc(const int&, const std::string&) = 0;
+        virtual void editExDt(const int&, const time_t&) = 0;
+        virtual void editInt(const int&, const int&) = 0; 
 };
 
 class MemoryRepository : public TaskRepository {
-	public:
+    private:
         std::vector<Task*> records;
 
+	public:
 		MemoryRepository() : TaskRepository() {}
 
-		void save_record(Task* new_record) override {
+		void saveRecord(Task* new_record) override {
 			records.push_back(new_record);
 		}
 
-		void remove_record(int id) override {
+		void removeRecord(const int& id) override {
 			for (Task* record : records) {
-				if (record->get_data(&Task::id) == id) {
+				if (record->getId() == id) {
                     auto it = std::remove(records.begin(), records.end(), record);
                     records.erase(it, records.end());
 				}
 			}
 		}
 
-		Task* get_one(int id) override {
+		Task* getOne(const int& id) override {
 			for (Task* record : records) {
-				if (record->get_data(&Task::id) == id) {
+				if (record->getId() == id) {
 					return record;
 				}
 			}
 		}
 
-		std::vector<Task*> get_all() override {
+		std::vector<Task*> getAll() override {
 			return records;
 		}
 
-		void edit_one(int id, std::string new_description) override {
-			for (Task* record : records) {
-				if (record->get_data(&Task::id) == id) {
-					record->set_data(&Task::task_description, new_description);
-					break;
+        void editDesc(const int& id, const std::string& new_desc) override {
+            for (Task* record : records) {
+				if (record->getId() == id) {
+					record->setDesc(new_desc);
 				}
 			}
-		}
+        }
+
+        void editExDt(const int& id, const time_t& new_dt) override {
+            for (Task* record : records) {
+				if (record->getId() == id) {
+					record->setExDt(new_dt);
+				}
+			}
+        }
+
+        void editInt(const int& id, const int& new_int) override {
+            for (Task* record : records) {
+				if (record->getId() == id) {
+					record->setInt(new_int);
+				}
+			}
+        }
 };
 
 class FileRepository : public TaskRepository {

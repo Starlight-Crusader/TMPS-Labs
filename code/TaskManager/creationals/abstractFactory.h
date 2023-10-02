@@ -10,12 +10,12 @@ class IOFactory {
 
 class ConsoleIOFactory : public IOFactory {
     public:
-        Printer* getPrinter() { return new ConsolePrinter(); }
-        Scanner* getScanner() { return new ConsoleScanner(); }
+        Printer* getPrinter() override { return new ConsolePrinter(); }
+        Scanner* getScanner() override { return new ConsoleScanner(); }
 };
 
 class FileIOFactory : public IOFactory {
     public:
-        Printer* getPrinter() { return new FilePrinter(""); }
-        Scanner* getScanner() { return new FileScanner(); }
+        Printer* getPrinter() override { return new FilePrinter(); }
+        Scanner* getScanner() override { return new FileScanner(); }
 };

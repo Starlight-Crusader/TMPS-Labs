@@ -26,7 +26,7 @@ class Utility {
 			return std::stoi(newId);
 		}
 
-		static std::vector<std::string> tokenize_input(std::string str, char separator) {
+		static std::vector<std::string> tokenizeInput(const std::string& str, const char& separator) {
 			std::istringstream iss(str);
 			std::vector<std::string> tokens;
 
@@ -38,7 +38,7 @@ class Utility {
 			return tokens;
 		}
 
-		static int convert_time_delta(std::string sdelta) {
+		static int convertTimeDelta(const std::string& sdelta) {
 			size_t separator_pos = sdelta.find_first_of("-");
 			
 			int value = std::stoi(sdelta.substr(0, separator_pos));
@@ -60,7 +60,7 @@ class Utility {
 			return tdelta;
 		}
 
-        static std::string get_current_time_str() {
+        static std::string getCurrentTimeStr() {
             const char* format = "%Y-%m-%d %H:%M:%S";
             char buffer[80];
 

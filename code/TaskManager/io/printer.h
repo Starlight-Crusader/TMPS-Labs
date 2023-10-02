@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <map>
 
 #include "../model/taskRepository.h"
 
@@ -8,25 +9,29 @@
 
 class Printer {
 	public:
-		virtual void print_record(TaskRepository*, int) = 0;
-		virtual void list_records(TaskRepository*) = 0;
-        virtual void set_path(std::string) {}
+		virtual void printRecord(TaskRepository*, const int&) = 0;
+		virtual void listRecords(TaskRepository*) = 0;
+        virtual void setPath(std::string) = 0;
+        virtual std::string getPath() = 0;
 };
 
 class ConsolePrinter : public Printer {
 	public:
-		void print_record(TaskRepository* repository, int id) override {
-			Task* record = repository->get_one(id);
-			std::cout << record->get_data_string() << '\n' << '\n';
+		void printRecord(TaskRepository* repository, const int& id) override {
+			Task* record = repository->getOne(id);
+			std::cout << record->getDataString() << '\n' << '\n';
 		}
 
-		void list_records(TaskRepository* repository) {
-			for (Task* record : repository->get_all()) {
-				std::cout << record->get_data_string() << '\n';
+		void listRecords(TaskRepository* repository) {
+			for (Task* record : repository->getAll()) {
+				std::cout << record->getDataString() << '\n';
 			}
 
             std::cout << '\n';
 		}
+
+        void setPath(std::string new_path) override {}
+        std::string getPath() override {return nullptr; }
 };
 
 class FilePrinter : public Printer {
@@ -34,11 +39,10 @@ class FilePrinter : public Printer {
         std::string path;
 
     public:
-        FilePrinter(std::string path) : path(path) {}
+        void setPath(std::string new_path) override { path = new_path; }
+        std::string getPath() override { return path; }
 
-        void set_path(std::string new_path) { path = new_path; }
-
-        void print_record(TaskRepository* repository, int id) override {
+        void printRecord(TaskRepository* repository, const int& id) override {
             std::ofstream output_file;
             output_file.open(path, std::ios::app);
 
@@ -46,20 +50,25 @@ class FilePrinter : public Printer {
                 output_file.open(path, std::ios::out);
             }
 
-            Task* record_to_out = repository->get_one(id);
-            output_file << record_to_out->get_data_string() << '\n';
+            Task* record_to_out = repository->getOne(id);
+            output_file << record_to_out->getDataString() << '\n';
 
             output_file.close();
         }
 
-        void list_records(TaskRepository* repository) override {
+        void listRecords(TaskRepository* repository) override {
             std::ofstream output_file;
             output_file.open(path, std::ios::out);
 
-            for (Task* record_to_out : repository->get_all()) {
-                output_file << record_to_out->get_data_string() << '\n';
-            }
+            if (output_file.is_open()) {
+                for (Task* record_to_out : repository->getAll()) {
+                    output_file << record_to_out->getDataString() << '\n';
+                }
 
-            output_file.close();
+                output_file.close();
+                std::cout << "LOG: Records written to: " << path << '\n';
+            } else {
+                std::cout << "ERROR: Unable to open: " << path << '\n';
+            }
         }
 };

@@ -1,8 +1,8 @@
 #include "../io/scanner.h"
 #include "../io/printer.h"
 #include "../model/taskRepository.h"
-#include "../manager/taskManager.h"
-#include "../application.h"
+#include "../api/manager.h"
+#include "../controller/application.h"
 #include "./abstractFactory.h"
 
 #pragma once
@@ -10,10 +10,10 @@
 class Builder {
     public:
         virtual void reset() = 0;
-        virtual Application* get_product() = 0;
+        virtual Application* getProduct() = 0;
 
-        virtual void set_io() = 0;
-        virtual void set_repository() = 0;
+        virtual void setIO() = 0;
+        virtual void setRepository() = 0;
 };
 
 class ConsoleBuilder : public Builder {
@@ -22,15 +22,15 @@ class ConsoleBuilder : public Builder {
         IOFactory* factory;
 
     public:
-        void reset() { product = new Application(); factory = new ConsoleIOFactory(); }
-        Application* get_product() { return product; }
+        void reset() override { product = new Application(); factory = new ConsoleIOFactory(); }
+        Application* getProduct() override { return product; }
 
-        void set_io() { 
+        void setIO() override { 
             product->scanner = factory->getScanner();
             product->printer = factory->getPrinter();
         }
         
-        void set_repository() { product->repository = new MemoryRepository(); }
+        void setRepository() override { product->repository = new MemoryRepository(); }
 };
 
 class FileBuilder : public Builder {
@@ -39,15 +39,15 @@ class FileBuilder : public Builder {
         IOFactory* factory;
 
     public:
-        void reset() { product = new Application(); factory = new FileIOFactory(); }
-        Application* get_product() { return product; }
+        void reset() override { product = new Application(); factory = new FileIOFactory(); }
+        Application* getProduct() override { return product; }
 
-        void set_io() { 
+        void setIO() override { 
             product->scanner = factory->getScanner();
             product->printer = factory->getPrinter();
         }
 
-        void set_repository() { product->repository = new MemoryRepository(); }
+        void setRepository() override { product->repository = new MemoryRepository(); }
 };
 
 class Director {
@@ -55,13 +55,13 @@ class Director {
         Builder* builder;
 
         public:
-            void set_builder(Builder* new_builder) { builder = new_builder;}
+            void setBuilder(Builder* new_builder) { builder = new_builder;}
 
-            Application* build_app() {
+            Application* buildApp() {
                 builder->reset();
-                builder->set_io();
-                builder->set_repository();
+                builder->setIO();
+                builder->setRepository();
 
-                return builder->get_product();
+                return builder->getProduct();
             }
 };

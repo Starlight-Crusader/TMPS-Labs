@@ -8,28 +8,37 @@
 class Task {
 	public:
         int id;
-		std::time_t creation_dt;
-		std::string task_description;
+	    std::time_t creation_dt;
+	    std::string task_description;
 
-		Task(std::string task_description) : id(Utility::generateRandomId()), creation_dt(time(0)), task_description(task_description) {}
+		Task(const std::string& task_description) : id(Utility::generateRandomId()), creation_dt(time(0)), task_description(task_description) {}
 
-		template <typename T>
-		T get_data(T Task::*member) { return this->*member; }
+        int getId() { return id; }
+        std::time_t getCrDt() { return creation_dt; }
+        std::string getDesc() { return task_description; }
 
-		template <typename T>
-		void set_data(T Task::*member, T value) { this->*member = value; }
+        virtual void setDesc(std::string new_desc) { task_description = new_desc; }
 
-		virtual std::string get_data_string() = 0;
-		virtual int maintenance() = 0;
+        virtual std::time_t getExDt() = 0;
+        virtual void setExDt(std::time_t) = 0;
+        virtual int getInt() = 0;
+        virtual void setInt(int) = 0;
+
+		virtual std::string getDataString() = 0;
+		virtual char maintenanceCheck() = 0;
 };
 
 class RegularTask : public Task {
-	public:
+    private:
         std::time_t expiration_dt;
 
-		RegularTask(std::string task_description, std::time_t interval) : Task(task_description), expiration_dt(time(0) + interval) {}
+	public:
+		RegularTask(const std::string& task_description, const std::time_t& interval) : Task(task_description), expiration_dt(time(0) + interval) {}
 
-		std::string get_data_string() override {
+        std::time_t getExDt() override { return expiration_dt; }
+        void setExDt(std::time_t new_dt) { expiration_dt = new_dt; }
+
+		std::string getDataString() override {
             const char* format = "%Y-%m-%d %H:%M:%S";
             char buffer[80];
 
@@ -43,23 +52,33 @@ class RegularTask : public Task {
 			return data_string;
 		}
 
-		int maintenance() override {
+		char maintenanceCheck() override {
 			if (time(0) > expiration_dt) {
-				return -1;
+				return 'd';
 			} else {
-                return 0;
+                return 's';
             }
 		}
+
+        int getInt() override { return 0; }
+        void setInt(int new_interval) {}
 };
 
 class RecurringTask : public Task {
-	public:
+    private:
         std::time_t extension_dt;
 		int interval;
 
-		RecurringTask(std::string task_description, int interval) : Task(task_description), extension_dt(time(0) + interval), interval(interval) {}
+	public:
+		RecurringTask(const std::string& task_description, const int& interval) : Task(task_description), extension_dt(time(0) + interval), interval(interval) {}
 
-		std::string get_data_string() override {
+        std::time_t getExDt() override { return extension_dt; }
+        void setExDt(std::time_t new_dt) { extension_dt = new_dt; }
+        
+        int getInt() override { return interval; }
+        void setInt(int new_interval) { interval = new_interval; }
+
+		std::string getDataString() override {
             const char* format = "%Y-%m-%d %H:%M:%S";
             char buffer[80];
 
@@ -73,12 +92,11 @@ class RecurringTask : public Task {
 			return data_string;
 		}
 
-		int maintenance() override {
+		char maintenanceCheck() override {
 			if (time(0) - extension_dt > interval) {
-				extension_dt = time(0) + interval;
-				return 1;
+			    return 'e';
 			} else {
-                return 0;
+                return 's';
             }
 		}
 };
