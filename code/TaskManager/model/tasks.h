@@ -23,8 +23,8 @@ class Task {
         virtual void setExDt(std::time_t) = 0;
         virtual int getInt() = 0;
         virtual void setInt(int) = 0;
-
-		virtual std::string getDataString() = 0;
+ 
+        virtual std::string getDataString() = 0;
 		virtual char maintenanceCheck() = 0;
 };
 
