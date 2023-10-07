@@ -1,4 +1,4 @@
-# (1) _SOLID_ Principles and (2) Design Patterns
+# (1) _SOLID_ Principles and (2) Creational Design Patterns
 ### Course: Techniques and mechanisms of software design
 ### Author: Kalamaghin Arteom (FAF-211)
 
