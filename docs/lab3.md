@@ -1,5 +1,5 @@
 # (3) Structural Design Patterns
-### Cthisse: Techniques and mechanisms of software design
+### Course: Techniques and mechanisms of software design
 ### Author: Kalamaghin Arteom (FAF-211)
 
 ## Objectives
